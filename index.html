@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperfocus Zone - Constellation Map</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas for Stars and Effects -->
+    <canvas id="backgroundCanvas"></canvas>
+    
+    <!-- Main Container -->
+    <div class="constellation-container">
+        
+        <!-- Header Controls -->
+        <div class="header-controls">
+            <div class="logo-section">
+                <h1 class="constellation-title">🌌 Hyperfocus Zone</h1>
+                <p class="constellation-subtitle">Interactive Constellation Map</p>
+            </div>
+            
+            <div class="controls-section">
+                <!-- Search -->
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="Search repositories...">
+                </div>
+                
+                <!-- Category Filters -->
+                <div class="filter-buttons">
+                    <button class="btn btn--sm filter-btn active" data-category="all">All</button>
+                    <button class="btn btn--sm filter-btn core-btn" data-category="Core">Core</button>
+                    <button class="btn btn--sm filter-btn creative-btn" data-category="Creative">Creative</button>
+                    <button class="btn btn--sm filter-btn social-btn" data-category="Social">Social</button>
+                    <button class="btn btn--sm filter-btn dev-btn" data-category="Dev Tools">Dev Tools</button>
+                </div>
+                
+                <!-- Portal Mode Toggle -->
+                <button class="btn btn--sm portal-btn" id="portalModeBtn">🌀 Portal Mode</button>
+            </div>
+        </div>
+        
+        <!-- Main Constellation Canvas -->
+        <div class="constellation-viewport" id="constellationViewport">
+            <svg class="constellation-svg" id="constellationSvg">
+                <defs>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge> 
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    <filter id="strongGlow">
+                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                        <feMerge> 
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+        
+        <!-- Info Panel -->
+        <div class="info-panel hidden" id="infoPanel">
+            <div class="info-panel-header">
+                <h3 class="info-title" id="infoTitle"></h3>
+                <button class="close-btn" id="closePanelBtn">✕</button>
+            </div>
+            
+            <div class="info-panel-body">
+                <div class="repo-category" id="repoCategory"></div>
+                <div class="repo-status" id="repoStatus"></div>
+                
+                <p class="repo-description" id="repoDescription"></p>
+                
+                <div class="features-section">
+                    <h4>Key Features:</h4>
+                    <ul class="features-list" id="featuresList"></ul>
+                </div>
+                
+                <div class="connections-section" id="connectionsSection">
+                    <h4>Connected To:</h4>
+                    <div class="connections-list" id="connectionsList"></div>
+                </div>
+                
+                <div class="panel-actions">
+                    <a class="btn btn--primary" id="githubLink" target="_blank">
+                        🌟 Explore on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mini Map -->
+        <div class="mini-map" id="miniMap">
+            <div class="mini-map-title">Navigation</div>
+            <div class="mini-map-viewport" id="miniMapViewport"></div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">Categories</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color core-color"></div>
+                    <span>Core</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color creative-color"></div>
+                    <span>Creative</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color social-color"></div>
+                    <span>Social</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color dev-color"></div>
+                    <span>Dev Tools</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
