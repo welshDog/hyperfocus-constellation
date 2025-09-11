@@ -1,6 +1,42 @@
-// COMPLETE HYPERFOCUS ZONE ECOSYSTEM - ALL 24 REPOSITORIES
-// Updated Constellation Map Application with Full Galaxy
+// HYPERFOCUS ZONE - CONSTELLATION MAP WITH PROPER DOM HANDLING
 
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🌌 DOM loaded, initializing Hyperfocus Zone...');
+    
+    // Verify critical elements exist
+    const viewport = document.getElementById('constellationViewport');
+    const canvas = document.getElementById('backgroundCanvas');
+    
+    if (!viewport) {
+        console.error('❌ ERROR: constellationViewport element not found!');
+        document.body.innerHTML = '<div style="color: red; padding: 50px; text-align: center;"><h2>❌ Missing Element</h2><p>The constellationViewport element is missing from HTML</p></div>';
+        return;
+    }
+    
+    if (!canvas) {
+        console.error('❌ ERROR: backgroundCanvas element not found!');
+        return;
+    }
+    
+    console.log('✅ All required elements found, starting constellation...');
+    
+    // Initialize constellation map
+    try {
+        const constellation = new ConstellationMap();
+        window.constellation = constellation; // For debugging
+        console.log('🎉 Constellation successfully initialized!');
+    } catch (error) {
+        console.error('💥 ERROR initializing constellation:', error);
+        viewport.innerHTML = `
+            <div style="color: red; text-align: center; padding: 50px;">
+                <h2>❌ JavaScript Error</h2>
+                <p>Error: ${error.message}</p>
+                <p>Check browser console for details.</p>
+            </div>
+        `;
+    }
+});
 class ConstellationMap {
     constructor() {
         // Complete Repository Ecosystem - ALL 24 STARS
