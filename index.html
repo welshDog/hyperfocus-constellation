@@ -26,7 +26,76 @@
             display: flex;
             flex-direction: column;
         }
-        
+
+        /* ZOOM SLIDER STYLING */
+#zoom-slider-container {
+    position: fixed;                    /* Stays in place when scrolling */
+    bottom: 30px;                       /* 30px from bottom of screen */
+    left: 50%;                          /* Center horizontally */
+    transform: translateX(-50%);        /* Perfect center alignment */
+    background: rgba(0, 0, 0, 0.8);     /* Dark see-through background */
+    border: 2px solid #32b8c6;          /* Cyan border to match theme */
+    border-radius: 25px;                /* Rounded corners */
+    padding: 12px 20px;                 /* Space inside the container */
+    display: flex;                      /* Put items in a row */
+    align-items: center;                /* Center items vertically */
+    gap: 12px;                          /* Space between items */
+    color: white;                       /* White text */
+    font-size: 14px;                    /* Text size */
+    z-index: 1000;                      /* Show above everything */
+    backdrop-filter: blur(10px);        /* Blur effect behind */
+}
+
+#zoom-slider {
+    width: 150px;                       /* Slider width */
+    height: 6px;                        /* Slider thickness */
+    background: rgba(255, 255, 255, 0.3); /* Light background */
+    border-radius: 3px;                 /* Rounded slider track */
+    outline: none;                      /* Remove default outline */
+    cursor: pointer;                    /* Show pointer on hover */
+}
+
+/* Style the slider thumb (the part you drag) */
+#zoom-slider::-webkit-slider-thumb {
+    appearance: none;                   /* Remove default styling */
+    width: 18px;                        /* Thumb width */
+    height: 18px;                       /* Thumb height */
+    background: #32b8c6;                /* Cyan color */
+    border-radius: 50%;                 /* Make it round */
+    cursor: pointer;                    /* Show pointer */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Small shadow */
+}
+
+/* Firefox slider thumb styling */
+#zoom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #32b8c6;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#zoom-value {
+    font-weight: bold;                  /* Make percentage bold */
+    color: #32b8c6;                     /* Cyan color */
+    min-width: 40px;                    /* Minimum width so it doesn't jump */
+}
+
+/* Hide on very small screens */
+@media (max-width: 480px) {
+    #zoom-slider-container {
+        bottom: 10px;                   /* Closer to bottom on mobile */
+        padding: 8px 16px;              /* Less padding */
+        font-size: 12px;                /* Smaller text */
+    }
+    
+    #zoom-slider {
+        width: 100px;                   /* Smaller slider on mobile */
+    }
+}
+
         .header-controls {
             display: flex;
             justify-content: space-between;
@@ -484,6 +553,60 @@
                     ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
                     ctx.fill();
                 }
+
+               // ZOOM SLIDER FUNCTIONALITY
+document.addEventListener('DOMContentLoaded', function() {
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomValue = document.getElementById('zoom-value');
+    const constellationSVG = document.querySelector('.constellation-svg');
+    
+    // Check if all elements exist
+    if (zoomSlider && zoomValue && constellationSVG) {
+        
+        // Update zoom when slider moves
+        zoomSlider.addEventListener('input', function(e) {
+            const scaleValue = e.target.value / 100;  // Convert to decimal (1.0 = 100%)
+            const percentage = e.target.value;        // Keep as percentage for display
+            
+            // Apply zoom to constellation
+            constellationSVG.style.transform = `scale(${scaleValue})`;
+            
+            // Update percentage display
+            zoomValue.textContent = percentage + '%';
+            
+            // Optional: Announce zoom level for screen readers
+            zoomSlider.setAttribute('aria-valuenow', percentage);
+        });
+        
+        // Add keyboard shortcuts for zoom
+        document.addEventListener('keydown', function(e) {
+            // Only if not typing in search box
+            if (e.target.tagName !== 'INPUT') {
+                if (e.key === '+' || e.key === '=') {
+                    // Zoom in with + key
+                    e.preventDefault();
+                    const currentZoom = parseInt(zoomSlider.value);
+                    if (currentZoom < 200) {
+                        zoomSlider.value = currentZoom + 10;
+                        zoomSlider.dispatchEvent(new Event('input'));
+                    }
+                }
+                if (e.key === '-' || e.key === '_') {
+                    // Zoom out with - key
+                    e.preventDefault();
+                    const currentZoom = parseInt(zoomSlider.value);
+                    if (currentZoom > 50) {
+                        zoomSlider.value = currentZoom - 10;
+                        zoomSlider.dispatchEvent(new Event('input'));
+                    }
+                }
+            }
+        });
+        
+        console.log('🔍 Zoom slider activated! Use slider or +/- keys to zoom.');
+    }
+});
+ 
             }
 
             createSVG() {
@@ -665,6 +788,20 @@ circle.setAttribute('aria-label',
         console.log('📁 Hyperfocus Zone app loaded');
     </script>
     </div>
+
+     <!-- Zoom Slider -->
+<div id="zoom-slider-container" aria-label="Zoom control">
+    <label for="zoom-slider">🔍 Zoom</label>
+    <input type="range" 
+           id="zoom-slider" 
+           min="50" 
+           max="200" 
+           value="100" 
+           step="10"
+           aria-label="Zoom constellation from 50% to 200%">
+    <span id="zoom-value">100%</span>
+</div>
+  
 </main>
 </body>
 
