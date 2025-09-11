@@ -432,31 +432,55 @@ class ConstellationMap {
     }
 
     createSVG() {
-        const viewport = document.getElementById('constellationViewport');
-        this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this.svg.setAttribute('class', 'constellation-svg');
-        this.svg.setAttribute('viewBox', '0 0 1000 700'); // Expanded viewBox
-        this.svg.innerHTML = `
-            <defs>
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-                <filter id="strongGlow">
-                    <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-            </defs>
-            <g id="constellationGroup"></g>
-        `;
+    console.log('🎨 Creating SVG...');
+    
+    // SAFE DOM ELEMENT RETRIEVAL
+    const viewport = document.getElementById('constellationViewport');
+    if (!viewport) {
+        console.error('❌ ERROR: constellationViewport element not found!');
+        throw new Error('constellationViewport element missing from DOM');
+    }
+
+    // Clear any existing content
+    viewport.innerHTML = '';
+
+    // Create SVG element
+    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.svg.setAttribute('class', 'constellation-svg');
+    this.svg.setAttribute('viewBox', '0 0 1000 700');
+    
+    // Add SVG filters for glow effects
+    this.svg.innerHTML = `
+        <defs>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+            <filter id="strongGlow">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <g id="constellationGroup"></g>
+    `;
+    
+    // SAFE APPEND - This is where the error was happening
+    try {
         viewport.appendChild(this.svg);
         this.group = this.svg.querySelector('#constellationGroup');
+        console.log('✅ SVG created and appended successfully');
+    } catch (error) {
+        console.error('❌ ERROR appending SVG:', error);
+        throw new Error('Failed to append SVG to viewport');
+    }
+}
+
     }
 
     bindEvents() {
