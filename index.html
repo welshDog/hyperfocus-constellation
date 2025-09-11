@@ -157,9 +157,220 @@
             z-index: 1;
             pointer-events: none;
         }
+
+        /* STORY SIDEBAR (Left Side) */
+.story-sidebar {
+    position: fixed;
+    left: 20px;
+    top: 80px;
+    width: 280px;
+    z-index: 15;
+}
+
+.story-box {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #9333ea;
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+.story-box h2 {
+    color: #9333ea;
+    font-size: 18px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.story-box p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.story-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.story-btn {
+    background: #9333ea;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.story-btn:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+
+/* SPONSOR SIDEBAR (Right Side) */
+.sponsor-sidebar {
+    position: fixed;
+    right: 20px;
+    top: 80px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 15;
+}
+
+.sponsor-box {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #32b8c6;
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sponsor-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(50, 184, 198, 0.3);
+    border-color: #22d3ee;
+}
+
+/* Different Sponsor Sizes */
+.big-sponsor {
+    min-height: 120px;
+    border-color: #fbbf24;
+}
+
+.big-sponsor:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+}
+
+.medium-sponsor {
+    min-height: 90px;
+}
+
+.small-sponsor {
+    min-height: 70px;
+}
+
+.sponsor-content {
+    text-align: center;
+    color: white;
+}
+
+.sponsor-tier {
+    font-size: 10px;
+    color: #32b8c6;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.big-sponsor .sponsor-tier {
+    color: #fbbf24;
+}
+
+.sponsor-placeholder {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    padding: 12px 8px;
+    border-radius: 4px;
+}
+
+.sponsor-price {
+    font-size: 12px;
+    color: #32b8c6;
+    font-weight: bold;
+}
+
+.big-sponsor .sponsor-price {
+    color: #fbbf24;
+}
+
+.sponsor-benefit {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+}
+
+/* Mobile - Hide sidebars on small screens */
+@media (max-width: 1200px) {
+    .story-sidebar,
+    .sponsor-sidebar {
+        display: none;
+    }
+}
+
     </style>
 </head>
 <body>
+    <!-- LEFT SIDE: Story Panel -->
+<div class="story-sidebar">
+    <div class="story-box">
+        <h2>🧠 HYPERFOCUS STORY</h2>
+        <p><strong>From physical labor to AI galaxy architect...</strong></p>
+        
+        <p>When vibration damage ended my hands-on career, I had two choices: give up or rebuild.</p>
+        
+        <p>I chose to rebuild with code.</p>
+        
+        <p><strong>My ADHD brain sees patterns:</strong> These aren't 24 separate projects - they're one connected productivity universe.</p>
+        
+        <p><strong>The mission:</strong> Prove neurodivergent minds don't need fixing - we need better tools.</p>
+        
+        <div class="story-actions">
+            <a href="https://github.com/welshDog/Lyndz-Wish-for-Help-to-build-HyperfocusZone" class="story-btn">💜 Support Mission</a>
+            <a href="https://discord.gg/ZKpHHrDctT" class="story-btn">💬 Join Discord</a>
+        </div>
+    </div>
+</div>
+
+<!-- RIGHT SIDE: Sponsor Boxes -->
+<div class="sponsor-sidebar">
+    <!-- Big Sponsor Box -->
+    <div class="sponsor-box big-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">🌌 GALAXY GUARDIAN</div>
+            <div class="sponsor-placeholder">Your Logo Here</div>
+            <div class="sponsor-price">£150/month</div>
+            <div class="sponsor-benefit">Top placement & shoutouts</div>
+        </div>
+    </div>
+    
+    <!-- Medium Sponsor Boxes -->
+    <div class="sponsor-box medium-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">⭐ CONSTELLATION CHAMPION</div>
+            <div class="sponsor-placeholder">Your Logo</div>
+            <div class="sponsor-price">£50/month</div>
+        </div>
+    </div>
+    
+    <div class="sponsor-box medium-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">⭐ CONSTELLATION CHAMPION</div>
+            <div class="sponsor-placeholder">Your Logo</div>
+            <div class="sponsor-price">£50/month</div>
+        </div>
+    </div>
+    
+    <!-- Small Sponsor Box -->
+    <div class="sponsor-box small-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">🌟 STAR SUPPORTER</div>
+            <div class="sponsor-placeholder">Logo</div>
+            <div class="sponsor-price">£15/month</div>
+        </div>
+    </div>
+</div>
+
     <!-- Screen reader announcements -->
     <div aria-live="polite" id="search-announcer" class="sr-only"></div>
     <div aria-live="assertive" id="action-announcer" class="sr-only"></div>
