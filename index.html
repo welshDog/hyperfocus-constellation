@@ -37,6 +37,36 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
+        /* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators */
+.star-node:focus {
+    outline: 3px solid #32b8c6 !important;
+    outline-offset: 4px;
+}
+
+.filter-btn:focus {
+    outline: 2px solid #32b8c6;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(50, 184, 198, 0.3);
+}
+
+.search-input:focus {
+    outline: 2px solid #32b8c6;
+    box-shadow: 0 0 0 4px rgba(50, 184, 198, 0.3);
+}
+
         .constellation-title {
             font-size: 24px;
             font-weight: 600;
@@ -130,11 +160,18 @@
     </style>
 </head>
 <body>
+    <!-- Screen reader announcements -->
+    <div aria-live="polite" id="search-announcer" class="sr-only"></div>
+    <div aria-live="assertive" id="action-announcer" class="sr-only"></div>
+    <div aria-live="polite" id="filter-announcer" class="sr-only"></div>
+
     <!-- Background Canvas -->
     <canvas id="backgroundCanvas"></canvas>
     
     <!-- Main Container -->
+   <main role="main" aria-labelledby="constellation-title">
     <div class="constellation-container">
+
         <!-- Header Controls -->
         <div class="header-controls">
             <div class="logo-section">
@@ -143,17 +180,22 @@
             </div>
             
             <div class="controls-section">
-                <input type="text" 
-                       id="searchInput" 
-                       class="search-input" 
-                       placeholder="Search repositories...">
-                
+                <label for="searchInput" class="sr-only">Search repositories</label>
+<input type="text" 
+       id="searchInput" 
+       class="search-input" 
+       placeholder="Search repositories..."
+       aria-describedby="search-help">
+<div id="search-help" class="sr-only">
+    Search across 24 repositories by name or category
+</div>
+ 
                 <div class="filter-buttons">
-                    <button class="filter-btn active" data-category="all">All (24)</button>
-                    <button class="filter-btn" data-category="Core Empire">Core</button>
-                    <button class="filter-btn" data-category="Creative">Creative</button>
-                    <button class="filter-btn" data-category="Social">Social</button>
-                    <button class="filter-btn" data-category="Dev Tools">Dev</button>
+                   <button class="filter-btn active" data-category="all" aria-pressed="true">All (24)</button>
+                    <button class="filter-btn" data-category="Core Empire" aria-pressed="true">Core</button>
+                    <button class="filter-btn" data-category="Creative" aria-pressed="true">Creative</button>
+                    <button class="filter-btn" data-category="Social" aria-pressed="true">Social</button>
+                    <button class="filter-btn" data-category="Dev Tools" aria-pressed="true">Dev</button>
                 </div>
                 
                 <button class="filter-btn" id="portalModeBtn">🌀 Portal Mode</button>
@@ -259,7 +301,11 @@
                     circle.setAttribute('stroke', '#fff');
                     circle.setAttribute('stroke-width', '2');
                     circle.setAttribute('class', 'star-node');
-                    
+                    circle.setAttribute('tabindex', '0');
+circle.setAttribute('role', 'button');
+circle.setAttribute('aria-label', 
+    `${repo.name} repository in ${repo.category}. Press Enter to open.`);
+
                     // Add event listeners
                     circle.addEventListener('mouseenter', (e) => {
                         this.showTooltip(e, repo);
@@ -275,6 +321,13 @@
                         window.open(repo.githubUrl, '_blank');
                     });
                     
+                    circle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        window.open(repo.githubUrl, '_blank');
+    }
+});
+
                     this.group.appendChild(circle);
                     
                     // Add label
@@ -400,5 +453,8 @@
 
         console.log('📁 Hyperfocus Zone app loaded');
     </script>
+    </div>
+</main>
 </body>
+
 </html>
