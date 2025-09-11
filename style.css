@@ -1,4 +1,50 @@
 :root {
+  /* HYPERFOCUS ZONE - CSS VARIABLES PATCH */
+:root {
+  /* Core Typography */
+  --font-family-base: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-text: #f5f5f5;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  
+  /* Constellation Colors */
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-primary: var(--color-teal-300);
+  
+  /* Background & UI */
+  --color-background: #0a0a0f;
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.2);
+  
+  /* Spacing System */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  
+  /* Font Sizes */
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  
+  /* Animation */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ensure box-sizing inheritance works */
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
   /* Primitive Color Tokens */
   --color-white: rgba(255, 255, 255, 1);
   --color-black: rgba(0, 0, 0, 1);
