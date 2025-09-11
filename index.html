@@ -552,61 +552,6 @@
                     ctx.arc(x, y, radius, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
                     ctx.fill();
-                }
-
-               // ZOOM SLIDER FUNCTIONALITY
-document.addEventListener('DOMContentLoaded', function() {
-    const zoomSlider = document.getElementById('zoom-slider');
-    const zoomValue = document.getElementById('zoom-value');
-    const constellationSVG = document.querySelector('.constellation-svg');
-    
-    // Check if all elements exist
-    if (zoomSlider && zoomValue && constellationSVG) {
-        
-        // Update zoom when slider moves
-        zoomSlider.addEventListener('input', function(e) {
-            const scaleValue = e.target.value / 100;  // Convert to decimal (1.0 = 100%)
-            const percentage = e.target.value;        // Keep as percentage for display
-            
-            // Apply zoom to constellation
-            constellationSVG.style.transform = `scale(${scaleValue})`;
-            
-            // Update percentage display
-            zoomValue.textContent = percentage + '%';
-            
-            // Optional: Announce zoom level for screen readers
-            zoomSlider.setAttribute('aria-valuenow', percentage);
-        });
-        
-        // Add keyboard shortcuts for zoom
-        document.addEventListener('keydown', function(e) {
-            // Only if not typing in search box
-            if (e.target.tagName !== 'INPUT') {
-                if (e.key === '+' || e.key === '=') {
-                    // Zoom in with + key
-                    e.preventDefault();
-                    const currentZoom = parseInt(zoomSlider.value);
-                    if (currentZoom < 200) {
-                        zoomSlider.value = currentZoom + 10;
-                        zoomSlider.dispatchEvent(new Event('input'));
-                    }
-                }
-                if (e.key === '-' || e.key === '_') {
-                    // Zoom out with - key
-                    e.preventDefault();
-                    const currentZoom = parseInt(zoomSlider.value);
-                    if (currentZoom > 50) {
-                        zoomSlider.value = currentZoom - 10;
-                        zoomSlider.dispatchEvent(new Event('input'));
-                    }
-                }
-            }
-        });
-        
-        console.log('🔍 Zoom slider activated! Use slider or +/- keys to zoom.');
-    }
-});
- 
             }
 
             createSVG() {
@@ -786,6 +731,35 @@ circle.setAttribute('aria-label',
         });
 
         console.log('📁 Hyperfocus Zone app loaded');
+
+// ADD ZOOM FUNCTIONALITY HERE
+setTimeout(function() {
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomValue = document.getElementById('zoom-value');
+    let targetElement = document.querySelector('svg');
+    
+    if (!targetElement) {
+        targetElement = document.getElementById('constellationViewport');
+    }
+    
+    if (zoomSlider && zoomValue && targetElement) {
+        zoomSlider.addEventListener('input', function(e) {
+            const percent = e.target.value;
+            const scale = percent / 100;
+            
+            zoomValue.textContent = percent + '%';
+            targetElement.style.transform = `scale(${scale})`;
+            targetElement.style.transformOrigin = 'center center';
+            
+            console.log('Zoomed to:', percent + '%');
+        });
+        
+        console.log('✅ Zoom slider working!');
+    } else {
+        console.log('❌ Zoom elements not found');
+    }
+}, 1000);
+
     </script>
     </div>
 
