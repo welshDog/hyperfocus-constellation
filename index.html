@@ -567,7 +567,8 @@
                 viewport.appendChild(this.svg);
             }
 
-            drawRepositories() 
+            drawRepositories() {
+ 
                 this.group.innerHTML = '';
 
                 this.repositories.forEach((repo) => {
@@ -627,7 +628,8 @@ circle.setAttribute('aria-label',
             
 
             showTooltip(event, repo) 
-                let tooltip = document.getElementById('tooltip');
+                let tooltipElement = document.getElementById('tooltip');
+
                 if (!tooltip) {
                     tooltip = document.createElement('div');
                     tooltip.id = 'tooltip';
@@ -690,7 +692,7 @@ circle.setAttribute('aria-label',
             
 
             handleSearch(query) 
-                const circles = this.group.querySelectorAll('.star-node');
+                const circleElements = document.querySelectorAll('.star-node');
                 circles.forEach((circle, index) => {
                     const repo = this.repositories[index];
                     const matches = repo.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -779,3 +781,4 @@ setTimeout(function() {
 </body>
 
 </html>
+}
