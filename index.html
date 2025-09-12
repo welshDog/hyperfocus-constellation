@@ -30,7 +30,33 @@
 
 <main role="main" aria-labelledby="constellation-title">
   <div class="constellation-container">
+    
     <!-- Header Controls … unchanged … -->
+    <div class="controls-section">
+    <!-- ADD THIS SEARCH INPUT -->
+    <div class="search-container">
+        <label for="searchInput" class="sr-only">Search repositories</label>
+        <input type="text" 
+               id="searchInput" 
+               class="search-input" 
+               placeholder="Search repositories..."
+               aria-label="Search across 24 repositories">
+    </div>
+      
+    <!-- ADD THESE FILTER BUTTONS -->
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-category="all">All (24)</button>
+        <button class="filter-btn" data-category="Core Empire">Core</button>
+        <button class="filter-btn" data-category="Creative">Creative</button>
+        <button class="filter-btn" data-category="Social">Social</button>
+        <button class="filter-btn" data-category="Dev Tools">Dev</button>
+    </div>
+    <!-- ADD THIS PORTAL MODE BUTTON -->
+    <button class="btn portal-btn" id="portalModeBtn">
+        🌀 Portal Mode
+    </button>
+</div> <!-- Close controls-section -->
+
     <div class="constellation-viewport" id="constellationViewport"></div>
   </div>
 </main>
