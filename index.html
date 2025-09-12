@@ -81,6 +81,30 @@ class ConstellationMap {
     this.init();
   }
 
+  //   Zoom Slider Connection
+setupZoomControls() {
+    const zoomSlider = document.getElementById('zoomSlider');
+    
+    if (zoomSlider) {
+        zoomSlider.addEventListener('input', (e) => {
+            const zoomValue = parseFloat(e.target.value) / 100;
+            this.setZoom(zoomValue);
+        });
+    }
+}
+
+//   Actual Zoom Function  
+setZoom(scale) {
+    if (this.group) {
+        const svgRect = this.svg.getBoundingClientRect();
+        const centerX = svgRect.width / 2;
+        const centerY = svgRect.height / 2;
+        
+        const transform = `translate(${centerX}, ${centerY}) scale(${scale}) translate(${-centerX}, ${-centerY})`;
+        this.group.setAttribute('transform', transform);
+    }
+}
+
   init() {
     this.createBackgroundStars();
     this.createSVG();
@@ -260,6 +284,7 @@ circle.addEventListener('mouseleave', () => {
                       repo.category.toLowerCase().includes(query.toLowerCase());
       circle.style.opacity = (query === '' || matches) ? '1' : '0.2';
       circle.style.pointerEvents = (query === '' || matches) ? 'auto' : 'none';
+      this.setupZoomControls();
     });
   }
 }
