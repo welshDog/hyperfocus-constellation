@@ -1,321 +1,790 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hyperfocus Zone - Constellation Map</title>
-<style>
-/* … your existing CSS unchanged … */
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Hyperfocus Zone - Constellation Map</title>
+    <style>
+        /* EMERGENCY CSS - GUARANTEED TO WORK */
+        :root {
+            --color-teal-300: #32b8c6;
+            --color-text: #f5f5f5;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0f;
+            color: #f5f5f5;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+        
+        .constellation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ZOOM SLIDER STYLING */
+#zoom-slider-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #32b8c6;
+    border-radius: 25px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 14px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+#zoom-slider {
+    width: 150px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Style the slider thumb (the part you drag) */
+#zoom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #32b8c6;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Firefox slider thumb styling */
+#zoom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #32b8c6;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#zoom-value {
+    font-weight: bold;
+    color: #32b8c6;
+    min-width: 40px;
+}
+
+/* Hide on very small screens */
+@media (max-width: 480px) {
+    #zoom-slider-container {
+        bottom: 10px;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+    
+    #zoom-slider {
+        width: 100px;
+    }
+}
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators */
+.star-node:focus {
+    outline: 3px solid #32b8c6 !important;
+    outline-offset: 4px;
+}
+
+.filter-btn:focus {
+    outline: 2px solid #32b8c6;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(50, 184, 198, 0.3);
+}
+
+.search-input:focus {
+    outline: 2px solid #32b8c6;
+    box-shadow: 0 0 0 4px rgba(50, 184, 198, 0.3);
+}
+
+        .constellation-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-teal-300);
+            margin: 0;
+            text-shadow: 0 0 10px rgba(50, 184, 198, 0.5);
+        }
+        
+        .constellation-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+        
+        .controls-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-input {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #f5f5f5;
+            font-size: 14px;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #f5f5f5;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .constellation-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .constellation-svg {
+            width: 100%;
+            height: 100%;
+            transition: transform .2s ease;
+        }
+        
+        .star-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .star-node:hover {
+            transform: scale(1.2);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .tooltip.visible {
+            opacity: 1;
+        }
+        
+        #backgroundCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* STORY SIDEBAR (Left Side) */
+.story-sidebar {
+    position: fixed;
+    left: 20px;
+    top: 80px;
+    width: 280px;
+    z-index: 15;
+}
+
+.story-box {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #9333ea;
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+.story-box h2 {
+    color: #9333ea;
+    font-size: 18px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.story-box p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.story-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.story-btn {
+    background: #9333ea;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.story-btn:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+
+/* SPONSOR SIDEBAR (Right Side) */
+.sponsor-sidebar {
+    position: fixed;
+    right: 20px;
+    top: 80px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 15;
+}
+
+.sponsor-box {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #32b8c6;
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sponsor-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(50, 184, 198, 0.3);
+    border-color: #22d3ee;
+}
+
+/* Different Sponsor Sizes */
+.big-sponsor {
+    min-height: 120px;
+    border-color: #fbbf24;
+}
+
+.big-sponsor:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+}
+
+.medium-sponsor {
+    min-height: 90px;
+}
+
+.small-sponsor {
+    min-height: 70px;
+}
+
+.sponsor-content {
+    text-align: center;
+    color: white;
+}
+
+.sponsor-tier {
+    font-size: 10px;
+    color: #32b8c6;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.big-sponsor .sponsor-tier {
+    color: #fbbf24;
+}
+
+.sponsor-placeholder {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    padding: 12px 8px;
+    border-radius: 4px;
+}
+
+.sponsor-price {
+    font-size: 12px;
+    color: #32b8c6;
+    font-weight: bold;
+}
+
+.big-sponsor .sponsor-price {
+    color: #fbbf24;
+}
+
+.sponsor-benefit {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+}
+
+/* Mobile - Hide sidebars on small screens */
+@media (max-width: 1200px) {
+    .story-sidebar,
+    .sponsor-sidebar {
+        display: none;
+    }
+}
+    </style>
 </head>
 <body>
-
-<!-- LEFT SIDE: Story Panel -->
+    <!-- LEFT SIDE: Story Panel -->
 <div class="story-sidebar">
-  <!-- … unchanged … -->
+    <div class="story-box">
+        <h2>🧠 HYPERFOCUS STORY</h2>
+        <p><strong>From physical labor to AI galaxy architect...</strong></p>
+        
+        <p>When vibration damage ended my hands-on career, I had two choices: give up or rebuild.</p>
+        
+        <p>I chose to rebuild with code.</p>
+        
+        <p><strong>My ADHD brain sees patterns:</strong> These aren't 24 separate projects - they're one connected productivity universe.</p>
+        
+        <p><strong>The mission:</strong> Prove neurodivergent minds don't need fixing - we need better tools.</p>
+        
+        <div class="story-actions">
+            <a href="https://github.com/welshDog/Lyndz-Wish-for-Help-to-build-HyperfocusZone" class="story-btn">💜 Support Mission</a>
+            <a href="https://discord.gg/ZKpHHrDctT" class="story-btn">💬 Join Discord</a>
+        </div>
+    </div>
 </div>
 
 <!-- RIGHT SIDE: Sponsor Boxes -->
 <div class="sponsor-sidebar">
-  <!-- … unchanged … -->
+    <!-- Big Sponsor Box -->
+    <div class="sponsor-box big-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">🌌 GALAXY GUARDIAN</div>
+            <div class="sponsor-placeholder">Your Logo Here</div>
+            <div class="sponsor-price">£150/month</div>
+            <div class="sponsor-benefit">Top placement & shoutouts</div>
+        </div>
+    </div>
+    
+    <!-- Medium Sponsor Boxes -->
+    <div class="sponsor-box medium-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">⭐ CONSTELLATION CHAMPION</div>
+            <div class="sponsor-placeholder">Your Logo</div>
+            <div class="sponsor-price">£50/month</div>
+        </div>
+    </div>
+    
+    <div class="sponsor-box medium-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">⭐ CONSTELLATION CHAMPION</div>
+            <div class="sponsor-placeholder">Your Logo</div>
+            <div class="sponsor-price">£50/month</div>
+        </div>
+    </div>
+    
+    <!-- Small Sponsor Box -->
+    <div class="sponsor-box small-sponsor">
+        <div class="sponsor-content">
+            <div class="sponsor-tier">🌟 STAR SUPPORTER</div>
+            <div class="sponsor-placeholder">Logo</div>
+            <div class="sponsor-price">£15/month</div>
+        </div>
+    </div>
 </div>
 
-<!-- Screen reader announcements -->
-<div aria-live="polite" id="search-announcer" class="sr-only"></div>
-<div aria-live="assertive" id="action-announcer" class="sr-only"></div>
-<div aria-live="polite" id="filter-announcer" class="sr-only"></div>
+    <!-- Screen reader announcements -->
+    <div aria-live="polite" id="search-announcer" class="sr-only"></div>
+    <div aria-live="assertive" id="action-announcer" class="sr-only"></div>
+    <div aria-live="polite" id="filter-announcer" class="sr-only"></div>
 
-<!-- Background Canvas -->
-<canvas id="backgroundCanvas"></canvas>
-
-<main role="main" aria-labelledby="constellation-title">
-  <div class="constellation-container">
+    <!-- Background Canvas -->
+    <canvas id="backgroundCanvas"></canvas>
     
-    <!-- Header Controls … unchanged … -->
-    <div class="controls-section">
-    <!-- ADD THIS SEARCH INPUT -->
-    <div class="search-container">
-        <label for="searchInput" class="sr-only">Search repositories</label>
-        <input type="text" 
-               id="searchInput" 
-               class="search-input" 
-               placeholder="Search repositories..."
-               aria-label="Search across 24 repositories">
-    </div>
-      
-    <!-- ADD THESE FILTER BUTTONS -->
-    <div class="filter-buttons">
-        <button class="filter-btn active" data-category="all">All (24)</button>
-        <button class="filter-btn" data-category="Core Empire">Core</button>
-        <button class="filter-btn" data-category="Creative">Creative</button>
-        <button class="filter-btn" data-category="Social">Social</button>
-        <button class="filter-btn" data-category="Dev Tools">Dev</button>
-    </div>
-    <!-- ADD THIS PORTAL MODE BUTTON -->
-    <button class="btn portal-btn" id="portalModeBtn">
-        🌀 Portal Mode
-    </button>
-</div> <!-- Close controls-section -->
+    <!-- Main Container -->
+   <main role="main" aria-labelledby="constellation-title">
+    <div class="constellation-container">
 
-    <div class="constellation-viewport" id="constellationViewport"></div>
-  </div>
+        <!-- Header Controls -->
+        <div class="header-controls">
+            <div class="logo-section">
+                <h1 id="constellation-title" class="constellation-title">🌌 Hyperfocus Zone</h1>
+                <p class="constellation-subtitle">Interactive Constellation Map</p>
+            </div>
+            
+            <div class="controls-section">
+                <label for="searchInput" class="sr-only">Search repositories</label>
+<input type="text" 
+       id="searchInput" 
+       class="search-input" 
+       placeholder="Search repositories..."
+       aria-describedby="search-help">
+<div id="search-help" class="sr-only">
+    Search across 24 repositories by name or category
+</div>
+ 
+                <div class="filter-buttons">
+                   <button class="filter-btn active" data-category="all" aria-pressed="true">All (24)</button>
+                    <button class="filter-btn" data-category="Core Empire" aria-pressed="false">Core</button>
+                    <button class="filter-btn" data-category="Creative" aria-pressed="false">Creative</button>
+                    <button class="filter-btn" data-category="Social" aria-pressed="false">Social</button>
+                    <button class="filter-btn" data-category="Dev Tools" aria-pressed="false">Dev</button>
+                </div>
+                
+                <button class="filter-btn" id="portalModeBtn" aria-pressed="false">🌀 Portal Mode</button>
+            </div>
+        </div>
+        
+        <!-- Constellation Viewport -->
+        <div class="constellation-viewport" id="constellationViewport">
+            <!-- Stars will be inserted here -->
+        </div>
+    </div>
 </main>
 
-<!-- Zoom Slider -->
+     <!-- Zoom Slider -->
 <div id="zoom-slider-container" aria-label="Zoom control">
-  <label for="zoom-slider">🔍 Zoom</label>
-  <input type="range" id="zoom-slider" min="50" max="200" value="100" step="10"
-         aria-label="Zoom constellation from 50% to 200%">
-  <span id="zoom-value">100%</span>
+    <label for="zoom-slider">🔍 Zoom</label>
+    <input type="range" 
+           id="zoom-slider" 
+           min="50" 
+           max="200" 
+           value="100" 
+           step="10"
+           aria-label="Zoom constellation from 50% to 200%">
+    <span id="zoom-value">100%</span>
 </div>
 
 <script>
 console.log('🌌 Hyperfocus Zone - Starting...');
 
-const repositories = [ /* … unchanged array … */ ];
+// Full repositories array as in your original file (kept same content)
+const repositories = [
+    {name: "HYPERFOCUSzone-starting-code-", category: "Core Empire", description: "The beating heart with Orchestra conductor, Memory Crystals, Dopamine Guardian", githubUrl: "https://github.com/welshDog/HYPERFOCUSzone-starting-code-", x: 400, y: 300, size: 18, color: "#9333ea"},
+    {name: "HYPERFOCUS-UNIFIED-EMPIRE", category: "Core Empire", description: "Empire-level coordination hub managing the entire constellation", githubUrl: "https://github.com/welshDog/HYPERFOCUS-UNIFIED-EMPIRE", x: 350, y: 200, size: 18, color: "#9333ea"},
+    {name: "HYPERFOCUS-ZONE-Omega-Vault-", category: "Core Empire", description: "Legendary archive of artifacts and relics forged in pure focus", githubUrl: "https://github.com/welshDog/-HYPERFOCUS-ZONE-Omega-Vault-", x: 200, y: 150, size: 15, color: "#9333ea"},
+    {name: "Hyper-vibe-engine", category: "Creative", description: "Turn images into soundtracks. Turn stories into portals", githubUrl: "https://github.com/welshDog/Hyper-vibe-engine", x: 600, y: 200, size: 15, color: "#32b8c6"},
+    {name: "hyper-vibe-studio", category: "Creative", description: "VS Code automation revolution v3.0 for creative workflows", githubUrl: "https://github.com/welshDog/hyper-vibe-studio", x: 650, y: 350, size: 15, color: "#32b8c6"},
+    {name: "BROski-Hyperspace-template", category: "Dev Tools", description: "ADHD-friendly development environment with vibe engine", githubUrl: "https://github.com/welshDog/BROski-Hyperspace-template", x: 200, y: 300, size: 15, color: "#3b82f6"},
+    {name: "HyperSpace", category: "Dev Tools", description: "TypeScript-powered hyperspace for rapid development", githubUrl: "https://github.com/welshDog/HyperSpace", x: 150, y: 400, size: 12, color: "#3b82f6"},
+    {name: "github-ai-mangaer-helper", category: "Dev Tools", description: "Advanced GitHub repository security scanner with AI assistance", githubUrl: "https://github.com/welshDog/github-ai-mangaer-helper", x: 100, y: 450, size: 12, color: "#3b82f6"},
+    {name: "hl-model-api", category: "AI & ML", description: "Proving AI can work on any hardware - even weak laptops", githubUrl: "https://github.com/welshDog/hl-model-api", x: 500, y: 100, size: 12, color: "#10b981"},
+    {name: "genai-stack", category: "AI & ML", description: "Langchain + Docker + Neo4j + Ollama advanced stack", githubUrl: "https://github.com/welshDog/genai-stack", x: 550, y: 50, size: 12, color: "#10b981"},
+    {name: "HYPERFOCUS-ZONE-NEURO-SOCIAL-DREAMER-", category: "Social", description: "Reimagining social media for neurodivergent creators", githubUrl: "https://github.com/welshDog/HYPERFOCUS-ZONE-NEURO-SOCIAL-DREAMER-", x: 550, y: 450, size: 15, color: "#ec4899"},
+    {name: "My-Social-COMs-Buddy", category: "Social", description: "AI to help communicate with dyslexia", githubUrl: "https://github.com/welshDog/My-Social-COMs-Buddy", x: 450, y: 500, size: 15, color: "#ec4899"},
+    {name: "hyperfocus-neurodivergent-HYPER-tool", category: "Neurodivergent Tools", description: "Specialized JavaScript tool for neurodivergent minds", githubUrl: "https://github.com/welshDog/hyperfocus-neurodivergent-HYPER-tool", x: 300, y: 550, size: 15, color: "#f59e0b"},
+    {name: "HYPERFOCUSzone-Community", category: "Community", description: "Community showcase for onboarding and collaboration", githubUrl: "https://github.com/welshDog/HYPERFOCUSzone-Community", x: 700, y: 300, size: 15, color: "#8b5cf6"},
+    {name: "HYPERFOCUSzone-DEV-Community", category: "Community", description: "Developer-focused collaboration space", githubUrl: "https://github.com/welshDog/HYPERFOCUSzone-DEV-Community", x: 750, y: 400, size: 12, color: "#8b5cf6"},
+    {name: "Lyndz-Wish-for-Help-to-build-HyperfocusZone", category: "Community", description: "The heart that keeps the entire ecosystem alive", githubUrl: "https://github.com/welshDog/Lyndz-Wish-for-Help-to-build-HyperfocusZone", x: 750, y: 200, size: 15, color: "#8b5cf6"},
+    {name: "RAZ-PI-EYE", category: "Hardware Systems", description: "Raspberry Pi CPU monitoring with wifi/bluetooth", githubUrl: "https://github.com/welshDog/RAZ-PI-EYE", x: 100, y: 200, size: 12, color: "#ef4444"},
+    {name: "tHe-HYPER-dOoK-STorY", category: "Documentation", description: "Living story and documentation of the hyperfocus journey", githubUrl: "https://github.com/welshDog/tHe-HYPER-dOoK-STorY", x: 50, y: 250, size: 12, color: "#6b7280"},
+    {name: "HyperLinks", category: "Documentation", description: "Connecting all constellation pieces for easy navigation", githubUrl: "https://github.com/welshDog/HyperLinks", x: 50, y: 400, size: 12, color: "#6b7280"},
+    {name: "HYPERFOCUS-ZONE-TEST-INFO-SYSYTEM", category: "Testing Systems", description: "Where humans and AI become the ultimate team", githubUrl: "https://github.com/welshDog/HYPERFOCUS-ZONE-TEST-INFO-SYSYTEM", x: 350, y: 50, size: 12, color: "#14b8a6"},
+    {name: "https-github.com-welshDog-HYPERfocusZone-Gemmi-build", category: "Special Projects", description: "Home of the world's first AI Agent Army", githubUrl: "https://github.com/welshDog/https-github.com-welshDog-HYPERfocusZone-Gemmi-build", x: 500, y: 250, size: 15, color: "#f97316"},
+    {name: "hyperfocus-constellation", category: "Special Projects", description: "The interactive map you're exploring right now!", githubUrl: "https://github.com/welshDog/hyperfocus-constellation", x: 800, y: 350, size: 15, color: "#f97316"},
+    {name: "vscode-java", category: "Enterprise Tools", description: "Java Language Support customized for the empire", githubUrl: "https://github.com/welshDog/vscode-java", x: 150, y: 550, size: 12, color: "#84cc16"},
+    {name: "grafana-by-example", category: "Enterprise Tools", description: "Monitoring and visualization system for empire metrics", githubUrl: "https://github.com/welshDog/grafana-by-example", x: 50, y: 500, size: 12, color: "#84cc16"}
+];
 
 class ConstellationMap {
-  constructor() {
-    this.repositories = repositories;
-    this.currentFilter = 'all';
-    this.init();
-  }
-
-  //   Zoom Slider Connection
-setupZoomControls() {
-    const zoomSlider = document.getElementById('zoomSlider');
-    
-    if (zoomSlider) {
-        zoomSlider.addEventListener('input', (e) => {
-            const zoomValue = parseFloat(e.target.value) / 100;
-            this.setZoom(zoomValue);
-        });
+    constructor() {
+        console.log('🌌 ConstellationMap initializing...');
+        this.repositories = repositories;
+        this.currentFilter = 'all';
+        this.init();
     }
-}
 
-//   Actual Zoom Function  
-setZoom(scale) {
-    if (this.group) {
-        const svgRect = this.svg.getBoundingClientRect();
-        const centerX = svgRect.width / 2;
-        const centerY = svgRect.height / 2;
-        
-        const transform = `translate(${centerX}, ${centerY}) scale(${scale}) translate(${-centerX}, ${-centerY})`;
-        this.group.setAttribute('transform', transform);
+    init() {
+        this.createBackgroundStars();
+        this.createSVG();
+        this.drawRepositories();
+        this.bindEvents();
+        this.setupZoomControls();
+        console.log('✅ Constellation initialized with', this.repositories.length, 'repositories');
     }
-}
 
-  init() {
-    this.createBackgroundStars();
-    this.createSVG();
-    this.drawRepositories();
-    this.bindEvents();
-  }
+    createBackgroundStars() {
+        const canvas = document.getElementById('backgroundCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-  createBackgroundStars() {
-    const canvas = document.getElementById('backgroundCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+        for (let i = 0; i < 200; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const radius = Math.random() * 2;
+            const opacity = Math.random() * 0.8 + 0.2;
 
-    for (let i = 0; i < 50; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const radius = Math.random() * 2;
-      const opacity = Math.random() * 0.8 + 0.2;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-      ctx.fill();
-    }
-  }
-
-  createSVG() {
-    const viewport = document.getElementById('constellationViewport');
-    viewport.innerHTML = '';
-    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.svg.setAttribute('class', 'constellation-svg');
-    this.svg.setAttribute('viewBox', '0 0 900 600');
-    this.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    this.svg.appendChild(this.group);
-    viewport.appendChild(this.svg);
-  }
-
-  .star-node {
-    transition: transform 0.2s ease;
-    will-change: transform;
-}
-
-.star-node:hover {
-    transform: scale(1.3);
-}
-
-  drawRepositories() {
-    this.group.innerHTML = '';
-    this.repositories.forEach((repo) => {
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', repo.x);
-      circle.setAttribute('cy', repo.y);
-      circle.setAttribute('r', repo.size);
-      circle.setAttribute('fill', repo.color);
-      circle.setAttribute('stroke', '#fff');
-      circle.setAttribute('stroke-width', '2');
-      circle.setAttribute('class', 'star-node');
-      circle.setAttribute('tabindex', '0');
-      circle.setAttribute('role', 'button');
-      circle.setAttribute('aria-label',
-        `${repo.name} repository in ${repo.category}. Press Enter to open.`);
-
-      circle.addEventListener('mouseenter', (e) => {
-    circle.style.transform = 'scale(1.3)';
-    circle.style.transformOrigin = 'center';
-});
-
-circle.addEventListener('mouseleave', () => {
-    circle.style.transform = 'scale(1)';
-});
-      circle.addEventListener('click', () => window.open(repo.githubUrl, '_blank'));
-      circle.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          window.open(repo.githubUrl, '_blank');
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+            ctx.fill();
         }
-      });
-      this.group.appendChild(circle);
-
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', repo.x);
-      text.setAttribute('y', repo.y + repo.size + 15);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('fill', '#fff');
-      text.setAttribute('font-size', '10');
-      text.style.pointerEvents = 'none';
-      text.textContent = repo.name.length > 12 ?
-          repo.name.substring(0, 12) + '...' : repo.name;
-      this.group.appendChild(text);
-    });
-  }
-
-  showTooltip(event, repo) {
-    let tooltip = document.getElementById('tooltip');
-    if (!tooltip) {
-      tooltip = document.createElement('div');
-      tooltip.id = 'tooltip';
-      tooltip.className = 'tooltip';
-      document.body.appendChild(tooltip);
     }
-    tooltip.innerHTML = `<strong>${repo.name}</strong><br>
-                         <em>${repo.category}</em><br>
-                         <small>${repo.description}</small>`;
-    tooltip.style.left = event.pageX + 10 + 'px';
-    tooltip.style.top = event.pageY - 10 + 'px';
-    tooltip.classList.add('visible');
-  }
 
-  hideTooltip() {
-    const tooltip = document.getElementById('tooltip');
-    if (tooltip) tooltip.classList.remove('visible');
-  }
+    createSVG() {
+        const viewport = document.getElementById('constellationViewport');
+        viewport.innerHTML = '';
 
-  bindEvents() {
-    console.log('🔗 Binding events...');
-    
-    // SAFE SEARCH INPUT BINDING
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            this.handleSearch(e.target.value);
+        this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this.svg.setAttribute('class', 'constellation-svg');
+        this.svg.setAttribute('viewBox', '0 0 900 600');
+        this.svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+        this.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.svg.appendChild(this.group);
+        viewport.appendChild(this.svg);
+    }
+
+    drawRepositories() {
+        if (!this.group) return;
+        this.group.innerHTML = '';
+
+        this.repositories.forEach((repo) => {
+            // Create circle
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', repo.x);
+            circle.setAttribute('cy', repo.y);
+            circle.setAttribute('r', repo.size);
+            circle.setAttribute('fill', repo.color);
+            circle.setAttribute('stroke', '#fff');
+            circle.setAttribute('stroke-width', '2');
+            circle.setAttribute('class', 'star-node');
+            circle.setAttribute('tabindex', '0');
+            circle.setAttribute('role', 'button');
+            circle.setAttribute('aria-label', `${repo.name} repository in ${repo.category}. Press Enter to open.`);
+
+            // Hover effects (SVG elements use attribute changes, not style transforms for best compatibility)
+            circle.addEventListener('mouseenter', (e) => {
+                this.showTooltip(e, repo);
+                circle.setAttribute('r', repo.size + 4);
+            });
+            circle.addEventListener('mouseleave', () => {
+                this.hideTooltip();
+                circle.setAttribute('r', repo.size);
+            });
+
+            circle.addEventListener('click', () => {
+                window.open(repo.githubUrl, '_blank');
+            });
+
+            circle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.open(repo.githubUrl, '_blank');
+                }
+            });
+
+            this.group.appendChild(circle);
+
+            // Add label
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', repo.x);
+            text.setAttribute('y', repo.y + repo.size + 15);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('fill', '#fff');
+            text.setAttribute('font-size', '10');
+            text.style.pointerEvents = 'none';
+
+            const shortName = repo.name.length > 12 ? repo.name.substring(0, 12) + '...' : repo.name;
+            text.textContent = shortName;
+
+            this.group.appendChild(text);
         });
-        console.log('✅ Search input bound');
-    } else {
-        console.warn('❌ searchInput element not found');
     }
-    
-    // SAFE FILTER BUTTONS BINDING  
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    if (filterButtons.length > 0) {
-        filterButtons.forEach(btn => {
+
+    showTooltip(event, repo) {
+        let tooltip = document.getElementById('tooltip');
+
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.id = 'tooltip';
+            tooltip.className = 'tooltip';
+            document.body.appendChild(tooltip);
+        }
+
+        tooltip.innerHTML = `
+            <strong>${repo.name}</strong><br>
+            <em>${repo.category}</em><br>
+            <small>${repo.description}</small>
+        `;
+
+        // position and show
+        tooltip.style.left = (event.pageX + 10) + 'px';
+        tooltip.style.top = (event.pageY - 10) + 'px';
+        tooltip.classList.add('visible');
+    }
+
+    hideTooltip() {
+        const tooltip = document.getElementById('tooltip');
+        if (tooltip) {
+            tooltip.classList.remove('visible');
+        }
+    }
+
+    setupZoomControls() {
+        // wire the HTML slider ID 'zoom-slider'
+        const zoomSlider = document.getElementById('zoom-slider');
+        const zoomValue = document.getElementById('zoom-value');
+        if (!zoomSlider || !this.svg) return;
+
+        zoomSlider.addEventListener('input', (e) => {
+            const percent = e.target.value;
+            const scale = percent / 100;
+            this.setZoom(scale);
+            if (zoomValue) zoomValue.textContent = percent + '%';
+        });
+    }
+
+    setZoom(scale) {
+        // scale the svg container (simpler and reliable)
+        if (this.svg) {
+            this.svg.style.transform = `scale(${scale})`;
+            this.svg.style.transformOrigin = 'center center';
+        }
+    }
+
+    bindEvents() {
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Remove active class from all buttons
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                this.currentFilter = e.target.dataset.category;
+                // Update aria-pressed and active classes
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
+                const target = e.currentTarget;
+                target.classList.add('active');
+                target.setAttribute('aria-pressed', 'true');
+
+                this.currentFilter = target.dataset.category || 'all';
                 this.applyFilters();
             });
         });
-        console.log(`✅ ${filterButtons.length} filter buttons bound`);
-    } else {
-        console.warn('❌ No filter buttons found');
-    }
-    
-    // SAFE PORTAL MODE BUTTON BINDING
-    const portalModeBtn = document.getElementById('portalModeBtn');
-    if (portalModeBtn) {
-        portalModeBtn.addEventListener('click', () => {
-            this.svg.style.animation = this.svg.style.animation ? '' : 'rotate 30s linear infinite';
+
+        // Search input
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+        }
+
+        // Portal mode button
+        const portalModeBtn = document.getElementById('portalModeBtn');
+        if (portalModeBtn) {
+            portalModeBtn.addEventListener('click', (e) => {
+                const isOn = portalModeBtn.getAttribute('aria-pressed') === 'true';
+                portalModeBtn.setAttribute('aria-pressed', String(!isOn));
+                this.svg.style.animation = this.svg.style.animation ? '' : 'rotate 30s linear infinite';
+            });
+        }
+
+        // window resize: redraw canvas size for stars
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('backgroundCanvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                this.createBackgroundStars(); // quick redraw
+            }
         });
-        console.log('✅ Portal mode button bound');
-    } else {
-        console.warn('❌ portalModeBtn element not found');
     }
-    
-    console.log('🎉 Event binding complete!');
+
+    applyFilters() {
+        const circles = this.group.querySelectorAll('.star-node');
+        circles.forEach((circle, index) => {
+            const repo = this.repositories[index];
+            if (!repo) return;
+            const show = this.currentFilter === 'all' || repo.category === this.currentFilter;
+            circle.style.opacity = show ? '1' : '0.2';
+            circle.style.pointerEvents = show ? 'auto' : 'none';
+        });
+    }
+
+    handleSearch(query) {
+        const q = (query || '').trim().toLowerCase();
+        const circles = this.group.querySelectorAll('.star-node');
+        circles.forEach((circle, index) => {
+            const repo = this.repositories[index];
+            if (!repo) return;
+            const matches = repo.name.toLowerCase().includes(q) ||
+                            repo.description.toLowerCase().includes(q) ||
+                            repo.category.toLowerCase().includes(q);
+            const show = q === '' || matches;
+            circle.style.opacity = show ? '1' : '0.2';
+            circle.style.pointerEvents = show ? 'auto' : 'none';
+        });
+    }
 }
 
-  applyFilters() {
-    this.group.querySelectorAll('.star-node').forEach((circle, index) => {
-      const repo = this.repositories[index];
-      if (this.currentFilter === 'all' || repo.category === this.currentFilter) {
-        circle.style.opacity = '1';
-        circle.style.pointerEvents = 'auto';
-      } else {
-        circle.style.opacity = '0.2';
-        circle.style.pointerEvents = 'none';
-      }
-    });
-  }
+// Add rotation animation
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(styleEl);
 
-  handleSearch(query) {
-    this.group.querySelectorAll('.star-node').forEach((circle, index) => {
-      const repo = this.repositories[index];
-      const matches = repo.name.toLowerCase().includes(query.toLowerCase()) ||
-                      repo.description.toLowerCase().includes(query.toLowerCase()) ||
-                      repo.category.toLowerCase().includes(query.toLowerCase());
-      circle.style.opacity = (query === '' || matches) ? '1' : '0.2';
-      circle.style.pointerEvents = (query === '' || matches) ? 'auto' : 'none';
-      this.setupZoomControls();
-    });
-  }
-}
-
-// Rotate animation style
-const style = document.createElement('style');
-style.textContent = `@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}`;
-document.head.appendChild(style);
-
-// Init
-document.addEventListener('DOMContentLoaded', () => new ConstellationMap());
-
-// Zoom slider
-setTimeout(() => {
-  const zoomSlider = document.getElementById('zoom-slider');
-  const zoomValue  = document.getElementById('zoom-value');
-  const target     = document.querySelector('svg');
-  if (zoomSlider && zoomValue && target) {
-    zoomSlider.addEventListener('input', (e) => {
-      const percent = e.target.value;
-      const scale   = percent / 100;
-      zoomValue.textContent = percent + '%';
-      target.style.transform = `scale(${scale})`;
-      target.style.transformOrigin = 'center center';
-    });
-  }
-}, 1000);
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        window.constellation = new ConstellationMap();
+        console.log('🎉 Constellation successfully loaded!');
+    } catch (err) {
+        console.error('💥 Constellation init error:', err);
+    }
+});
 </script>
 
 </body>
 </html>
+
