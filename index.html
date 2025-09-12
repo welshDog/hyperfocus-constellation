@@ -94,7 +94,7 @@ class ConstellationMap {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 50; i++) {
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height;
       const radius = Math.random() * 2;
@@ -117,6 +117,15 @@ class ConstellationMap {
     viewport.appendChild(this.svg);
   }
 
+  .star-node {
+    transition: transform 0.2s ease;
+    will-change: transform;
+}
+
+.star-node:hover {
+    transform: scale(1.3);
+}
+
   drawRepositories() {
     this.group.innerHTML = '';
     this.repositories.forEach((repo) => {
@@ -134,13 +143,13 @@ class ConstellationMap {
         `${repo.name} repository in ${repo.category}. Press Enter to open.`);
 
       circle.addEventListener('mouseenter', (e) => {
-        this.showTooltip(e, repo);
-        circle.setAttribute('r', repo.size + 4);
-      });
-      circle.addEventListener('mouseleave', () => {
-        this.hideTooltip();
-        circle.setAttribute('r', repo.size);
-      });
+    circle.style.transform = 'scale(1.3)';
+    circle.style.transformOrigin = 'center';
+});
+
+circle.addEventListener('mouseleave', () => {
+    circle.style.transform = 'scale(1)';
+});
       circle.addEventListener('click', () => window.open(repo.githubUrl, '_blank'));
       circle.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
