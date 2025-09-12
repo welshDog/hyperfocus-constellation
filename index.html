@@ -554,7 +554,7 @@
                     ctx.fill();
             }
 
-            createSVG() {
+            createSVG() 
                 const viewport = document.getElementById('constellationViewport');
                 viewport.innerHTML = '';
 
@@ -567,7 +567,7 @@
                 viewport.appendChild(this.svg);
             }
 
-            drawRepositories() {
+            drawRepositories() 
                 this.group.innerHTML = '';
 
                 this.repositories.forEach((repo) => {
@@ -624,9 +624,9 @@ circle.setAttribute('aria-label',
                     
                     this.group.appendChild(text);
                 });
-            }
+            
 
-            showTooltip(event, repo) {
+            showTooltip(event, repo) 
                 let tooltip = document.getElementById('tooltip');
                 if (!tooltip) {
                     tooltip = document.createElement('div');
@@ -644,16 +644,16 @@ circle.setAttribute('aria-label',
                 tooltip.style.left = event.pageX + 10 + 'px';
                 tooltip.style.top = event.pageY - 10 + 'px';
                 tooltip.classList.add('visible');
-            }
+            
 
-            hideTooltip() {
+            hideTooltip() 
                 const tooltip = document.getElementById('tooltip');
                 if (tooltip) {
                     tooltip.classList.remove('visible');
                 }
-            }
+            
 
-            bindEvents() {
+            bindEvents() 
                 // Filter buttons
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -673,9 +673,9 @@ circle.setAttribute('aria-label',
                 document.getElementById('portalModeBtn').addEventListener('click', () => {
                     this.svg.style.animation = this.svg.style.animation ? '' : 'rotate 30s linear infinite';
                 });
-            }
+            
 
-            applyFilters() {
+            applyFilters() 
                 const circles = this.group.querySelectorAll('.star-node');
                 circles.forEach((circle, index) => {
                     const repo = this.repositories[index];
@@ -687,9 +687,9 @@ circle.setAttribute('aria-label',
                         circle.style.pointerEvents = 'none';
                     }
                 });
-            }
+            
 
-            handleSearch(query) {
+            handleSearch(query) 
                 const circles = this.group.querySelectorAll('.star-node');
                 circles.forEach((circle, index) => {
                     const repo = this.repositories[index];
@@ -705,8 +705,7 @@ circle.setAttribute('aria-label',
                         circle.style.pointerEvents = 'none';
                     }
                 });
-            }
-        }
+            
 
         // Add rotation animation
         const style = document.createElement('style');
