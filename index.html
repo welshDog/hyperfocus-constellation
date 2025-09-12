@@ -159,22 +159,50 @@ class ConstellationMap {
   }
 
   bindEvents() {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        this.currentFilter = e.target.dataset.category;
-        this.applyFilters();
-      });
-    });
-    document.getElementById('searchInput')
-      .addEventListener('input', (e) => this.handleSearch(e.target.value));
-    document.getElementById('portalModeBtn')
-      .addEventListener('click', () => {
-        this.svg.style.animation =
-          this.svg.style.animation ? '' : 'rotate 30s linear infinite';
-      });
-  }
+    console.log('🔗 Binding events...');
+    
+    // SAFE SEARCH INPUT BINDING
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            this.handleSearch(e.target.value);
+        });
+        console.log('✅ Search input bound');
+    } else {
+        console.warn('❌ searchInput element not found');
+    }
+    
+    // SAFE FILTER BUTTONS BINDING  
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    if (filterButtons.length > 0) {
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                this.currentFilter = e.target.dataset.category;
+                this.applyFilters();
+            });
+        });
+        console.log(`✅ ${filterButtons.length} filter buttons bound`);
+    } else {
+        console.warn('❌ No filter buttons found');
+    }
+    
+    // SAFE PORTAL MODE BUTTON BINDING
+    const portalModeBtn = document.getElementById('portalModeBtn');
+    if (portalModeBtn) {
+        portalModeBtn.addEventListener('click', () => {
+            this.svg.style.animation = this.svg.style.animation ? '' : 'rotate 30s linear infinite';
+        });
+        console.log('✅ Portal mode button bound');
+    } else {
+        console.warn('❌ portalModeBtn element not found');
+    }
+    
+    console.log('🎉 Event binding complete!');
+}
 
   applyFilters() {
     this.group.querySelectorAll('.star-node').forEach((circle, index) => {
