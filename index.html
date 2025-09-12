@@ -83,12 +83,29 @@
     min-width: 40px;
 }
 
-/* Hide on very small screens */
-@media (max-width: 480px) {
-    #zoom-slider-container {
-        bottom: 10px;
-        padding: 8px 16px;
-        font-size: 12px;
+/* 🎯 MOBILE-FRIENDLY VERSION */
+@media (max-width: 1200px) {
+    .story-sidebar {
+        position: static; /* ← No more floating */
+        width: 100%;
+        margin: 10px;
+        order: 1; /* ← Shows first */
+    }
+    
+    .sponsor-sidebar {
+        position: static;
+        width: 100%;
+        margin: 10px;
+        order: 2; /* ← Shows second */
+    }
+    
+    /* Stack them in main container */
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
     }
     
     #zoom-slider {
