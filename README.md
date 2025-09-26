@@ -1,5 +1,9 @@
 # 🌌 Hyperfocus Zone - Interactive Constellation Map
 
+[💎⚡ SUPPORT THE HYPERFOCUS EMPIRE ⚡💎 – Donation & Sponsorship Portal](https://welshdog.github.io/hyperfocuszone.com-Support-Hub-/)
+
+> Join our Focus Warriors, Elite Agents, and Empire Builders to power next-gen ADHD-friendly tools!
+
 **The world's first interactive galaxy showcasing neurodivergent productivity innovation**
 
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Explore%20Galaxy-blue?style=for-the-badge)](https://welshdog.github.io/hyperfocus-constellation/)
