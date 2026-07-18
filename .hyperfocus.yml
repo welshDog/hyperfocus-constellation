@@ -1,0 +1,12 @@
+# HyperFocus Z0ne repo manifest - read by scripts/gen_repo_map.py
+# Edit this file, then re-run the generator. Never hand-edit the map.
+
+name: "hyperfocus-constellation"
+emoji: "🌌"
+tagline: "Interactive constellation map of the ecosystem"
+category: "web"
+stack: "Web (static)"
+first_doc: "README.md"
+tier: "LIVE"
+url: ""
+notes: "GitHub Pages; candidate consumer of ecosystem-map.json"
